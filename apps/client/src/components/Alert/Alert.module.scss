@@ -1,0 +1,9 @@
+.alert {
+  display: flex;
+  padding: 0.5rem;
+  width: 100%;
+
+  border: 1px solid var(--color-red-6);
+  border-radius: 0.25rem;
+  color: var(--color-red-6);
+}
