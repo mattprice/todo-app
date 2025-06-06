@@ -1,0 +1,21 @@
+.input {
+  display: flex;
+  padding: 0.5rem;
+  width: 100%;
+
+  border: 1px solid var(--color-neutral-3);
+  border-radius: 0.25rem;
+  font: inherit;
+  color: var(--color-text-1);
+
+  &:hover {
+    background: var(--color-neutral-3);
+  }
+
+  &:focus,
+  &:active {
+    background: var(--color-neutral-2);
+    border: 1px solid var(--color-blue-6);
+    outline: none;
+  }
+}

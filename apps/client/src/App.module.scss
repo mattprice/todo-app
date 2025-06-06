@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  margin-bottom: 2rem;
+  padding: 0.5rem 2rem;
+  justify-content: space-between;
+  align-items: center;
+
+  background: var(--color-neutral-2);
+  color: var(--color-text-2);
+
+  h1 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+}
+
+.listWrapper {
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.todoList {
+  display: flex;
+  flex-direction: column;
+  width: 768px;
+  gap: 0.5rem;
+}

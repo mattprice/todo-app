@@ -1,68 +1,52 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  --color-neutral-0: #ffffff;
+  --color-neutral-1: #f9fafa;
+  --color-neutral-2: #f4f5f6;
+  --color-neutral-3: #ededf0;
+  --color-neutral-6: #b6b9c4;
+  --color-neutral-8: #838691;
+  --color-neutral-10: #50565e;
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --color-red-3: #f9b0b2;
+  --color-red-6: #f03a3e;
+  --color-blue-6: #006fff;
+  --color-blue-7: #0059cc;
+
+  --color-text-1: #212327;
+  --color-text-2: #50565e;
+  --color-text-3: #808893;
+
+  @media (prefers-color-scheme: dark) {
+    --color-neutral-0: #131416;
+    --color-neutral-1: #1c1e21;
+    --color-neutral-2: #282b2f;
+    --color-neutral-3: #ededf0;
+    --color-neutral-6: #b6b9c4;
+    --color-neutral-8: #838691;
+    --color-neutral-10: #dee0e3;
+
+    --color-red-3: #913034;
+    --color-red-6: #ee6367;
+    --color-blue-6: #4797ff;
+    --color-blue-7: #80b7ff;
+
+    --color-text-1: #f9fafa;
+    --color-text-2: #dee0e3;
+    --color-text-3: #b7bcc2;
+  }
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  background: var(--color-neutral-0);
+  color: var(--color-text-2);
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
 }
