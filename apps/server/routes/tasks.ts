@@ -1,12 +1,14 @@
+import { randomUUID } from "crypto";
 import express from "express";
 
 const router = express.Router();
 
 type Task = {
+  id: string;
   title: string;
 };
 
-let tasks: Task[] = [];
+let tasks: Record<string, Task> = {};
 
 router.get("/tasks", (req, res) => {
   res.json({
@@ -24,13 +26,41 @@ router.post("/tasks", (req, res) => {
     return;
   }
 
-  const length = tasks.push({
+  const id = randomUUID();
+  tasks[id] = {
+    id,
     title: title.trim(),
-  });
+  };
 
   res.status(201).json({
     data: {
-      task: tasks[length - 1],
+      task: tasks[id],
+    },
+  });
+});
+
+router.put("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body as Task;
+
+  if (typeof title !== "string" || title.trim() === "") {
+    res.status(400).json({ error: "Title is a required field" });
+    return;
+  }
+
+  if (!tasks[id]) {
+    res.status(404).json({ error: "Task not found" });
+    return;
+  }
+
+  tasks[id] = {
+    ...tasks[id],
+    title: title.trim(),
+  };
+
+  res.json({
+    data: {
+      task: tasks[id],
     },
   });
 });

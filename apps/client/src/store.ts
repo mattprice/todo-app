@@ -1,22 +1,24 @@
 import { create } from "zustand";
 
 interface Task {
+  id: string;
   title: string;
 }
 
 interface StoreState {
   status: "loading" | "error" | "success";
-  tasks: Task[];
+  tasks: Record<string, Task>;
 }
 
 interface StoreActions {
   fetchTasks: () => Promise<void>;
-  addTask: (task: Task) => void;
+  addTask: (task: Omit<Task, "id">) => void;
+  editTask: (id: string, task: Task) => void;
 }
 
 export const useTaskStore = create<StoreState & StoreActions>((set) => ({
   status: "loading",
-  tasks: [],
+  tasks: {},
 
   fetchTasks: async () => {
     set({ status: "loading" });
@@ -54,12 +56,43 @@ export const useTaskStore = create<StoreState & StoreActions>((set) => ({
       }
 
       const data = await response.json();
+      const newTask = data.data.task;
 
       set((state) => ({
-        tasks: [...state.tasks, data.data.task],
+        tasks: {
+          ...state.tasks,
+          [newTask.id]: newTask,
+        },
       }));
     } catch (error) {
       console.error("Error creating task:", error);
+    }
+  },
+  editTask: async (id, task) => {
+    try {
+      const response = await fetch(`/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: task.title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to update task");
+      }
+
+      const data = await response.json();
+      const updatedTask = data.data.task;
+
+      set((state) => ({
+        tasks: {
+          ...state.tasks,
+          [id]: updatedTask,
+        },
+      }));
+    } catch (error) {
+      console.error("Error updating task:", error);
     }
   },
 }));

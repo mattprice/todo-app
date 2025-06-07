@@ -6,6 +6,7 @@ import styles from "./TodoList.module.scss";
 
 export function TodoList() {
   const status = useTaskStore((s) => s.status);
+  // TODO: Use shallow
   const tasks = useTaskStore((s) => s.tasks);
 
   useEffect(() => {
@@ -22,11 +23,11 @@ export function TodoList() {
 
   return (
     <div className={styles.todoList}>
-      {tasks.map((_, index) => (
-        <TodoItem key={index} id={index} />
+      {Object.keys(tasks).map((taskId) => (
+        <TodoItem key={taskId} id={taskId} />
       ))}
 
-      <TodoItem id={-1} />
+      <TodoItem />
     </div>
   );
 }

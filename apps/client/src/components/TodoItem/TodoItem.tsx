@@ -3,39 +3,41 @@ import { useTaskStore } from "../../store";
 import styles from "./TodoItem.module.scss";
 
 interface TodoItemProps {
-  id: number;
+  id?: string;
 }
 
-export function TodoItem({ id }: TodoItemProps) {
+export function TodoItem({ id = "" }: TodoItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
   const addTask = useTaskStore((s) => s.addTask);
+  const editTask = useTaskStore((s) => s.editTask);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      const value = event.currentTarget.value.trim();
-      if (value) {
-        addTask({ title: value });
+      event.preventDefault();
+      event.currentTarget.blur();
+
+      const title = event.currentTarget.value.trim();
+      if (!title) {
+        event.currentTarget.value = task?.title ?? "";
+        return;
+      }
+
+      if (!task) {
+        addTask({ title: title });
         event.currentTarget.value = "";
+      } else {
+        editTask(id, { ...task, title: title });
+        event.currentTarget.value = title;
       }
     }
   };
-
-  if (id === -1) {
-    return (
-      <input
-        name="todoInput"
-        className={styles.input}
-        placeholder="Add a new task..."
-        onKeyDown={handleKeyDown}
-      />
-    );
-  }
 
   return (
     <input
       name="todoInput"
       className={styles.input}
-      defaultValue={task.title}
+      placeholder={!task ? "Add a new task..." : ""}
+      defaultValue={task?.title || ""}
       onKeyDown={handleKeyDown}
     />
   );
