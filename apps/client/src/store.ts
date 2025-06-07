@@ -10,7 +10,7 @@ interface StoreState {
 interface StoreActions {
   fetchTasks: () => Promise<void>;
   addTask: (task: Omit<Task, "id">) => void;
-  editTask: (id: string, task: Task) => void;
+  editTask: (id: string, task: Partial<Task>) => void;
 }
 
 export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
@@ -73,7 +73,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ title: task.title }),
+          body: JSON.stringify(task),
         });
 
         if (!response.ok) {

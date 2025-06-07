@@ -22,12 +22,12 @@ export function TodoList() {
   }
 
   return (
-    <div className={styles.todoList}>
+    <section className={styles.todoList} role="list" aria-label="Task List">
       {taskIds.map((id) => (
         <TodoItem key={id} id={id} />
       ))}
 
       <TodoItem />
-    </div>
+    </section>
   );
 }

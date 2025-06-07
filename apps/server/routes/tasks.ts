@@ -19,7 +19,7 @@ router.post("/tasks", (req, res) => {
   const { title } = req.body as Task;
 
   if (typeof title !== "string") {
-    res.status(400).json({ error: "Title is a required field" });
+    res.status(400).json({ error: "Title must be a string" });
     return;
   }
 
@@ -27,6 +27,7 @@ router.post("/tasks", (req, res) => {
   tasks[id] = {
     id,
     title,
+    completed: false,
   };
 
   emitTaskUpdate("created", tasks[id]);
@@ -40,10 +41,15 @@ router.post("/tasks", (req, res) => {
 
 router.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { title } = req.body as Task;
+  const { title, completed } = req.body as Partial<Task>;
 
-  if (typeof title !== "string") {
-    res.status(400).json({ error: "Title is a required field" });
+  if (title !== undefined && typeof title !== "string") {
+    res.status(400).json({ error: "Title must be a string" });
+    return;
+  }
+
+  if (completed !== undefined && typeof completed !== "boolean") {
+    res.status(400).json({ error: "Completed must be a boolean" });
     return;
   }
 
@@ -54,7 +60,8 @@ router.put("/tasks/:id", (req, res) => {
 
   tasks[id] = {
     ...tasks[id],
-    title,
+    title: title ?? tasks[id].title,
+    completed: completed ?? tasks[id].completed,
   };
 
   emitTaskUpdate("updated", tasks[id]);

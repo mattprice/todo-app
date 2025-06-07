@@ -30,11 +30,11 @@ export function TodoItem({ id = "" }: TodoItemProps) {
 
       // TODO: Display something if there is an error
       if (!task) {
-        addTask({ title: value });
+        addTask({ title: value, completed: false });
         setValue("");
       } else {
         // TODO: If the title is empty, ask if they want to delete the task
-        editTask(id, { ...task, title: value });
+        editTask(id, { title: value });
       }
     }
   };
@@ -43,14 +43,33 @@ export function TodoItem({ id = "" }: TodoItemProps) {
     setValue(event.target.value);
   };
 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (task) {
+      editTask(id, { completed: event.target.checked });
+    }
+  };
+
   return (
-    <input
-      name="todoInput"
-      className={styles.input}
-      placeholder={!task ? "Add a new task..." : ""}
-      value={value || ""}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-    />
+    <div role="listitem" className={styles.todoItem} aria-label="Task">
+      <input
+        name="completed"
+        type="checkbox"
+        className={styles.checkbox}
+        checked={task?.completed || false}
+        onChange={handleCheckboxChange}
+        disabled={!task}
+        title="Mark task as complete"
+        aria-hidden={!task}
+      />
+      <input
+        name="title"
+        className={styles.input}
+        placeholder={!task ? "Add a new task..." : ""}
+        value={value || ""}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        title="Edit task title"
+      />
+    </div>
   );
 }
