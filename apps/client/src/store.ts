@@ -1,9 +1,6 @@
 import { create } from "zustand";
-
-interface Task {
-  id: string;
-  title: string;
-}
+import type { Task } from "../../../shared/types";
+import { socket } from "./socket";
 
 interface StoreState {
   status: "loading" | "error" | "success";
@@ -16,83 +13,104 @@ interface StoreActions {
   editTask: (id: string, task: Task) => void;
 }
 
-export const useTaskStore = create<StoreState & StoreActions>((set) => ({
-  status: "loading",
-  tasks: {},
+export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
+  const store: StoreState & StoreActions = {
+    status: "loading",
+    tasks: {},
 
-  fetchTasks: async () => {
-    set({ status: "loading" });
+    fetchTasks: async () => {
+      set({ status: "loading" });
 
-    try {
-      const response = await fetch("/api/tasks");
+      try {
+        const response = await fetch("/api/tasks");
 
-      if (!response.ok) {
-        throw new Error("Unable to fetch tasks");
+        if (!response.ok) {
+          throw new Error("Unable to fetch tasks");
+        }
+
+        const data = await response.json();
+
+        set({
+          status: "success",
+          tasks: data.data.tasks,
+        });
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        set({ status: "error" });
       }
+    },
+    addTask: async (task) => {
+      try {
+        const response = await fetch("/api/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: task.title }),
+        });
 
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error("Unable to create task");
+        }
 
-      set({
-        status: "success",
-        tasks: data.data.tasks,
-      });
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-      set({ status: "error" });
-    }
-  },
-  addTask: async (task) => {
-    try {
-      const response = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: task.title }),
-      });
+        const data = await response.json();
+        const newTask = data.data.task;
 
-      if (!response.ok) {
-        throw new Error("Unable to create task");
+        set((state) => ({
+          tasks: {
+            ...state.tasks,
+            [newTask.id]: newTask,
+          },
+        }));
+      } catch (error) {
+        console.error("Error creating task:", error);
       }
+    },
+    editTask: async (id, task) => {
+      try {
+        const response = await fetch(`/api/tasks/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: task.title }),
+        });
 
-      const data = await response.json();
-      const newTask = data.data.task;
+        if (!response.ok) {
+          throw new Error("Unable to update task");
+        }
 
-      set((state) => ({
-        tasks: {
-          ...state.tasks,
-          [newTask.id]: newTask,
-        },
-      }));
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  },
-  editTask: async (id, task) => {
-    try {
-      const response = await fetch(`/api/tasks/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: task.title }),
-      });
+        const data = await response.json();
+        const updatedTask = data.data.task;
 
-      if (!response.ok) {
-        throw new Error("Unable to update task");
+        set((state) => ({
+          tasks: {
+            ...state.tasks,
+            [id]: updatedTask,
+          },
+        }));
+      } catch (error) {
+        console.error("Error updating task:", error);
       }
+    },
+  };
 
-      const data = await response.json();
-      const updatedTask = data.data.task;
+  socket.on("connect", () => {
+    get().fetchTasks();
+  });
 
-      set((state) => ({
-        tasks: {
-          ...state.tasks,
-          [id]: updatedTask,
-        },
-      }));
-    } catch (error) {
-      console.error("Error updating task:", error);
-    }
-  },
-}));
+  socket.on("taskUpdate", (data) => {
+    set((state) => ({
+      tasks: {
+        ...state.tasks,
+        [data.task.id]: data.task,
+      },
+    }));
+  });
+
+  socket.on("disconnect", () => {
+    set({ status: "error" });
+  });
+
+  return store;
+});

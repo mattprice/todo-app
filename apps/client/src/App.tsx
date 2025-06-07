@@ -1,7 +1,17 @@
+import { useEffect } from "react";
 import styles from "./App.module.scss";
 import { TodoList } from "./components/TodoList/TodoList";
+import { socket } from "./socket";
 
 function App() {
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <header className={styles.header}>

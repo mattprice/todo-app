@@ -1,12 +1,9 @@
 import { randomUUID } from "crypto";
 import express from "express";
+import type { Task } from "../../../shared/types.ts";
+import { emitTaskUpdate } from "../socket.ts";
 
 const router = express.Router();
-
-type Task = {
-  id: string;
-  title: string;
-};
 
 let tasks: Record<string, Task> = {};
 
@@ -31,6 +28,8 @@ router.post("/tasks", (req, res) => {
     id,
     title,
   };
+
+  emitTaskUpdate("created", tasks[id]);
 
   res.status(201).json({
     data: {
@@ -57,6 +56,8 @@ router.put("/tasks/:id", (req, res) => {
     ...tasks[id],
     title,
   };
+
+  emitTaskUpdate("updated", tasks[id]);
 
   res.json({
     data: {

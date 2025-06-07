@@ -1,4 +1,4 @@
-import { type KeyboardEvent } from "react";
+import { type KeyboardEvent, useEffect, useState } from "react";
 import { useTaskStore } from "../../store";
 import styles from "./TodoItem.module.scss";
 
@@ -10,29 +10,37 @@ export function TodoItem({ id = "" }: TodoItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
   const addTask = useTaskStore((s) => s.addTask);
   const editTask = useTaskStore((s) => s.editTask);
+  const [value, setValue] = useState(task?.title);
+
+  useEffect(() => {
+    setValue(task?.title);
+  }, [task?.title]);
 
   // TODO: Handle onBlur events too, since Enter isn't the only way to submit
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
       event.currentTarget.blur();
+      setValue(task?.title);
     }
 
     if (event.key === "Enter") {
       event.preventDefault();
       event.currentTarget.blur();
 
-      const title = event.currentTarget.value;
-
+      // TODO: Display something if there is an error
       if (!task) {
-        addTask({ title: title });
-        event.currentTarget.value = "";
+        addTask({ title: value });
+        setValue("");
       } else {
         // TODO: If the title is empty, ask if they want to delete the task
-        editTask(id, { ...task, title: title });
-        event.currentTarget.value = title;
+        editTask(id, { ...task, title: value });
       }
     }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
   };
 
   return (
@@ -40,7 +48,8 @@ export function TodoItem({ id = "" }: TodoItemProps) {
       name="todoInput"
       className={styles.input}
       placeholder={!task ? "Add a new task..." : ""}
-      defaultValue={task?.title || ""}
+      value={value || ""}
+      onChange={handleChange}
       onKeyDown={handleKeyDown}
     />
   );
