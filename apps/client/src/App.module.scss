@@ -14,16 +14,10 @@
   }
 }
 
-.listWrapper {
+.container {
   display: flex;
   flex-direction: column;
   place-items: center;
   margin: 0 auto;
-}
-
-.todoList {
-  display: flex;
-  flex-direction: column;
-  width: 768px;
-  gap: 0.5rem;
+  padding: 2rem;
 }

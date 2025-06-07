@@ -24,13 +24,13 @@ router.post("/tasks", (req, res) => {
     return;
   }
 
-  tasks.push({
+  const length = tasks.push({
     title: title.trim(),
   });
 
   res.status(201).json({
     data: {
-      tasks: tasks,
+      task: tasks[length - 1],
     },
   });
 });
