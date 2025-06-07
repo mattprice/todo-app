@@ -21,7 +21,7 @@ router.get("/tasks", (req, res) => {
 router.post("/tasks", (req, res) => {
   const { title } = req.body as Task;
 
-  if (typeof title !== "string" || title.trim() === "") {
+  if (typeof title !== "string") {
     res.status(400).json({ error: "Title is a required field" });
     return;
   }
@@ -29,7 +29,7 @@ router.post("/tasks", (req, res) => {
   const id = randomUUID();
   tasks[id] = {
     id,
-    title: title.trim(),
+    title,
   };
 
   res.status(201).json({
@@ -43,7 +43,7 @@ router.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
   const { title } = req.body as Task;
 
-  if (typeof title !== "string" || title.trim() === "") {
+  if (typeof title !== "string") {
     res.status(400).json({ error: "Title is a required field" });
     return;
   }
@@ -55,7 +55,7 @@ router.put("/tasks/:id", (req, res) => {
 
   tasks[id] = {
     ...tasks[id],
-    title: title.trim(),
+    title,
   };
 
   res.json({
