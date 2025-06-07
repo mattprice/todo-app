@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
 import { useTaskStore } from "../../store";
 import { Alert } from "../Alert/Alert";
 import { TodoItem } from "../TodoItem/TodoItem";
@@ -6,8 +7,7 @@ import styles from "./TodoList.module.scss";
 
 export function TodoList() {
   const status = useTaskStore((s) => s.status);
-  // TODO: Use shallow
-  const tasks = useTaskStore((s) => s.tasks);
+  const taskIds = useTaskStore(useShallow((s) => Object.keys(s.tasks)));
 
   useEffect(() => {
     useTaskStore.getState().fetchTasks();
@@ -23,8 +23,8 @@ export function TodoList() {
 
   return (
     <div className={styles.todoList}>
-      {Object.keys(tasks).map((taskId) => (
-        <TodoItem key={taskId} id={taskId} />
+      {taskIds.map((id) => (
+        <TodoItem key={id} id={id} />
       ))}
 
       <TodoItem />

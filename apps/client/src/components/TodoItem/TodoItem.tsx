@@ -11,6 +11,7 @@ export function TodoItem({ id = "" }: TodoItemProps) {
   const addTask = useTaskStore((s) => s.addTask);
   const editTask = useTaskStore((s) => s.editTask);
 
+  // TODO: Handle onBlur events too, since Enter isn't the only way to submit
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
