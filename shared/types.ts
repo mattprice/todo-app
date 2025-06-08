@@ -9,3 +9,18 @@ export interface User {
   displayName: string;
   color: string;
 }
+
+export interface UpdateTaskEvent {
+  task: Task;
+}
+
+export interface UpdateConnectedUsersEvent {
+  users: User[];
+}
+
+export interface ServerEvents {
+  updateTask: (data: UpdateTaskEvent) => void;
+  updateConnectedUsers: (data: UpdateConnectedUsersEvent) => void;
+}
+
+export interface ClientEvents {}

@@ -1,13 +1,18 @@
 import { Server as HttpServer } from "http";
 import { Server } from "socket.io";
-import type { Task, User } from "../../shared/types.ts";
+import type {
+  ClientEvents,
+  ServerEvents,
+  Task,
+  User,
+} from "../../shared/types.ts";
 
 // Users are assigned a unique combination of name and color on connection
 // NOTE: For best results, these arrays should be the same length
 const ANIMAL_NAMES = ["Capybara", "Otter", "Penguin", "Dolphin"];
 const ANIMAL_COLORS = ["red", "green", "yellow", "purple"];
 
-let io: Server | null = null;
+let io: Server<ClientEvents, ServerEvents> | null = null;
 let totalConnections = 0;
 const connectedUsers: Record<string, User> = {};
 
@@ -48,11 +53,8 @@ export function initializeSocket(httpServer: HttpServer) {
   });
 }
 
-export function emitTaskUpdate(
-  action: "created" | "updated" | "deleted",
-  task: Task
-) {
+export function emitTaskUpdate(task: Task) {
   if (io) {
-    io.emit("updateTask", { action, task });
+    io.emit("updateTask", { task });
   }
 }

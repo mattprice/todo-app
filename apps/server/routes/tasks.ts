@@ -30,7 +30,7 @@ router.post("/tasks", (req, res) => {
     completed: false,
   };
 
-  emitTaskUpdate("created", tasks[id]);
+  emitTaskUpdate(tasks[id]);
 
   res.status(201).json({
     data: {
@@ -64,7 +64,7 @@ router.put("/tasks/:id", (req, res) => {
     completed: completed ?? tasks[id].completed,
   };
 
-  emitTaskUpdate("updated", tasks[id]);
+  emitTaskUpdate(tasks[id]);
 
   res.json({
     data: {
