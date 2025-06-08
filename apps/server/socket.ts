@@ -10,8 +10,8 @@ import type {
 
 // Users are assigned a unique combination of name and color on connection
 // NOTE: For best results, these arrays should be the same length
-const ANIMAL_NAMES = ["Capybara", "Otter", "Penguin", "Dolphin"];
-const ANIMAL_COLORS = ["red", "green", "yellow", "purple"];
+const ANIMAL_NAMES = ["Capybara", "Llama", "Fox", "Hippo"];
+const ANIMAL_COLORS = ["green", "blue", "yellow", "pink"];
 
 let io: Server<ClientEvents, ServerEvents> | null = null;
 let totalConnections = 0;

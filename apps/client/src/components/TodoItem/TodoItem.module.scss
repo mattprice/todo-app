@@ -31,19 +31,19 @@
     pointer-events: none;
   }
 
-  &::highlight(purple) {
-    background-color: rgba(155, 89, 182, 0.5);
+  &::highlight(blue) {
+    background-color: rgba(#0984e3, 0.5);
   }
 
   &::highlight(green) {
-    background-color: rgba(46, 204, 113, 0.5);
+    background-color: rgba(#00b894, 0.5);
   }
 
   &::highlight(yellow) {
-    background-color: rgba(230, 126, 34, 0.5);
+    background-color: rgba(#fdcb6e, 0.5);
   }
 
-  &::highlight(red) {
-    background-color: rgba(231, 76, 60, 0.5);
+  &::highlight(pink) {
+    background-color: rgba(#e84393, 0.5);
   }
 }
