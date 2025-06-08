@@ -15,7 +15,9 @@ export function TodoItem({ id = "" }: TodoItemProps) {
   const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    // Don't update the input field if it's focused. (You run into a fun bug
+    // where you end up typing at the beginning of the field.)
+    if (inputRef.current && document.activeElement !== inputRef.current) {
       inputRef.current.textContent = task?.title || "";
     }
   }, [task?.title]);
@@ -87,35 +89,37 @@ export function TodoItem({ id = "" }: TodoItemProps) {
     };
   }, [textSelections]);
 
-  // TODO: Handle onBlur events too, since Enter isn't the only way to submit
   // TODO: Clear text selection when the input is blurred
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    const newTitle = inputRef.current.textContent || "";
+
+    // Reset the input field on Escape
     if (event.key === "Escape") {
       event.preventDefault();
       event.currentTarget.blur();
-      if (inputRef.current) {
-        inputRef.current.textContent = task?.title || "";
-      }
+      inputRef.current.textContent = task.title;
     }
 
+    // Create a new task on Enter, or blur the input for existing tasks
     if (event.key === "Enter") {
       event.preventDefault();
       event.currentTarget.blur();
 
-      const value = inputRef.current?.textContent || "";
-
       // TODO: Display something if there is an error
-      if (!task) {
-        if (value !== "") {
-          addTask({ title: value, completed: false });
-          if (inputRef.current) {
-            inputRef.current.textContent = "";
-          }
-        }
-      } else {
-        // TODO: If the title is empty, ask if they want to delete the task
-        editTask(id, { title: value });
+      if (newTitle !== "" && !task) {
+        addTask({ title: newTitle, completed: false });
+        inputRef.current.textContent = "";
       }
+    }
+
+    // For everything else, if the value has changed, update the task
+    // TODO: If the title is empty, ask if they want to delete the task
+    if (task && newTitle !== task.title) {
+      editTask(id, { title: newTitle });
     }
   };
 
