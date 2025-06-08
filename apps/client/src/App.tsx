@@ -5,7 +5,8 @@ import { socket } from "./socket";
 import { useSessionStore } from "./stores/useSessionStore";
 
 function App() {
-  const { connectedUsers } = useSessionStore();
+  const connectedUsers = useSessionStore((s) => s.connectedUsers);
+  const currentUserColor = useSessionStore((s) => s.currentUserColor);
 
   useEffect(() => {
     socket.connect();
@@ -14,6 +15,19 @@ function App() {
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (currentUserColor) {
+      const bodyStyles = window.getComputedStyle(document.body);
+      const highlightColor = bodyStyles.getPropertyValue(
+        `--color-user-${currentUserColor}-50`
+      );
+      document.documentElement.style.setProperty(
+        "--color-current-user",
+        highlightColor
+      );
+    }
+  }, [currentUserColor]);
 
   return (
     <>

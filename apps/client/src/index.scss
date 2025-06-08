@@ -18,6 +18,16 @@
   --color-text-2: #50565e;
   --color-text-3: #808893;
 
+  --color-user-blue: #0984e3;
+  --color-user-green: #b1f1e4;
+  --color-user-yellow: #fdcb6e;
+  --color-user-pink: #e84393;
+
+  --color-user-blue-50: #{rgba(#0984e3, 0.5)};
+  --color-user-green-50: #{rgba(#b1f1e4, 0.5)};
+  --color-user-yellow-50: #{rgba(#fdcb6e, 0.5)};
+  --color-user-pink-50: #{rgba(#e84393, 0.5)};
+
   @media (prefers-color-scheme: dark) {
     --color-neutral-0: #131416;
     --color-neutral-1: #1c1e21;
@@ -49,4 +59,8 @@ body {
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.25;
+}
+
+::selection {
+  background-color: var(--color-current-user);
 }

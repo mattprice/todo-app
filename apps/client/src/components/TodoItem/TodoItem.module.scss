@@ -32,18 +32,18 @@
   }
 
   &::highlight(blue) {
-    background-color: rgba(#0984e3, 0.5);
+    background-color: var(--color-user-blue-50);
   }
 
   &::highlight(green) {
-    background-color: rgba(#00b894, 0.5);
+    background-color: var(--color-user-green-50);
   }
 
   &::highlight(yellow) {
-    background-color: rgba(#fdcb6e, 0.5);
+    background-color: var(--color-user-yellow-50);
   }
 
   &::highlight(pink) {
-    background-color: rgba(#e84393, 0.5);
+    background-color: var(--color-user-pink-50);
   }
 }

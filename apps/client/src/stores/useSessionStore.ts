@@ -4,6 +4,8 @@ import { socket } from "../socket";
 
 interface SessionState {
   status: "loading" | "error" | "success";
+  currentUserId: string | null;
+  currentUserColor: string | null;
   connectedUsers: User[];
   textSelections: Record<string, TextSelection[]>;
 }
@@ -19,6 +21,8 @@ interface SessionActions {
 export const useSessionStore = create<SessionState & SessionActions>((set) => {
   const store: SessionState & SessionActions = {
     status: "loading",
+    currentUserId: null,
+    currentUserColor: null,
     connectedUsers: [],
     textSelections: {},
 
@@ -32,9 +36,13 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   };
 
   socket.on("updateConnectedUsers", (data) => {
+    const currentUser = data.users.find((user) => user.id === socket.id);
+
     set((state) => ({
       ...state,
       status: "success",
+      currentUserId: currentUser?.id || null,
+      currentUserColor: currentUser?.color || null,
       connectedUsers: data.users,
     }));
   });

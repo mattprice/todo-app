@@ -54,13 +54,17 @@ export function TodoItem({ id = "" }: TodoItemProps) {
   }, [id]);
 
   useEffect(() => {
-    // TODO: Don't highlight your own selections
     const textNode = inputRef.current?.firstChild;
     if (!textNode || !textSelections || !CSS.highlights) {
       return;
     }
 
+    const currentUserId = useSessionStore.getState().currentUserId;
     for (const selection of textSelections) {
+      if (selection.userId === currentUserId) {
+        continue;
+      }
+
       // TODO: Finding a user this way isn't efficient for how often this runs
       const user = useSessionStore
         .getState()

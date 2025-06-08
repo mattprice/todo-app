@@ -46,18 +46,18 @@
   background-color: currentColor;
 
   &.blue {
-    background-color: #0984e3;
+    background-color: var(--color-user-blue);
   }
 
   &.green {
-    background-color: #00b894;
+    background-color: var(--color-user-green);
   }
 
   &.yellow {
-    background-color: #fdcb6e;
+    background-color: var(--color-user-yellow);
   }
 
   &.pink {
-    background-color: #e84393;
+    background-color: var(--color-user-pink);
   }
 }
