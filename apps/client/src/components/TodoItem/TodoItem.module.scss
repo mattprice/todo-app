@@ -24,4 +24,26 @@
     border: 1px solid var(--color-blue-6);
     outline: none;
   }
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: var(--color-text-3);
+    pointer-events: none;
+  }
+
+  &::highlight(purple) {
+    background-color: rgba(155, 89, 182, 0.5);
+  }
+
+  &::highlight(green) {
+    background-color: rgba(46, 204, 113, 0.5);
+  }
+
+  &::highlight(yellow) {
+    background-color: rgba(230, 126, 34, 0.5);
+  }
+
+  &::highlight(red) {
+    background-color: rgba(231, 76, 60, 0.5);
+  }
 }

@@ -4,6 +4,7 @@ import type {
   ClientEvents,
   ServerEvents,
   Task,
+  TextSelection,
   User,
 } from "../../shared/types.ts";
 
@@ -15,6 +16,7 @@ const ANIMAL_COLORS = ["red", "green", "yellow", "purple"];
 let io: Server<ClientEvents, ServerEvents> | null = null;
 let totalConnections = 0;
 const connectedUsers: Record<string, User> = {};
+const textSelections: Record<string, TextSelection[]> = {};
 
 export function initializeSocket(httpServer: HttpServer) {
   io = new Server(httpServer);
@@ -33,12 +35,35 @@ export function initializeSocket(httpServer: HttpServer) {
       id: socket.id,
       displayName: ANIMAL_NAMES[nameIndex],
       color: ANIMAL_COLORS[colorIndex],
+      selection: null,
     };
 
     connectedUsers[socket.id] = user;
 
     io.emit("updateConnectedUsers", {
       users: Object.values(connectedUsers),
+    });
+
+    socket.on("textSelection", (data) => {
+      const selection: TextSelection = {
+        userId: socket.id,
+        start: data.selection.start,
+        end: data.selection.end,
+      };
+
+      const taskSelections = textSelections[data.taskId] || [];
+      const userSelection = taskSelections.find((s) => s.userId === socket.id);
+      if (userSelection) {
+        userSelection.start = selection.start;
+        userSelection.end = selection.end;
+      } else {
+        taskSelections.push(selection);
+      }
+      textSelections[data.taskId] = taskSelections;
+
+      socket.broadcast.emit("updateTextSelections", {
+        selections: textSelections,
+      });
     });
 
     socket.on("disconnect", () => {

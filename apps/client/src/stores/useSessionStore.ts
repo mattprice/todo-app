@@ -1,16 +1,34 @@
 import { create } from "zustand";
-import type { User } from "../../../../shared/types";
+import type { TextSelection, User } from "../../../../shared/types";
 import { socket } from "../socket";
 
 interface SessionState {
   status: "loading" | "error" | "success";
   connectedUsers: User[];
+  textSelections: Record<string, TextSelection[]>;
 }
 
-export const useSessionStore = create<SessionState>((set) => {
-  const store: SessionState = {
+interface SessionActions {
+  sendTextSelection: (
+    taskId: string,
+    start: number | null,
+    end: number | null
+  ) => void;
+}
+
+export const useSessionStore = create<SessionState & SessionActions>((set) => {
+  const store: SessionState & SessionActions = {
     status: "loading",
     connectedUsers: [],
+    textSelections: {},
+
+    sendTextSelection: (taskId, start, end) => {
+      // TODO: Debounce this action to avoid flooding the server with updates?
+      socket.volatile.emit("textSelection", {
+        taskId,
+        selection: { start, end },
+      });
+    },
   };
 
   socket.on("updateConnectedUsers", (data) => {
@@ -18,6 +36,13 @@ export const useSessionStore = create<SessionState>((set) => {
       ...state,
       status: "success",
       connectedUsers: data.users,
+    }));
+  });
+
+  socket.on("updateTextSelections", (data) => {
+    set((state) => ({
+      ...state,
+      textSelections: data.selections,
     }));
   });
 

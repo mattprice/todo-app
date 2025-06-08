@@ -10,7 +10,7 @@ interface StoreState {
 interface StoreActions {
   fetchTasks: () => Promise<void>;
   addTask: (task: Omit<Task, "id">) => void;
-  editTask: (id: string, task: Partial<Task>) => void;
+  editTask: (taskId: string, task: Partial<Task>) => void;
 }
 
 export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
@@ -66,9 +66,9 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
         console.error("Error creating task:", error);
       }
     },
-    editTask: async (id, task) => {
+    editTask: async (taskId, task) => {
       try {
-        const response = await fetch(`/api/tasks/${id}`, {
+        const response = await fetch(`/api/tasks/${taskId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
         set((state) => ({
           tasks: {
             ...state.tasks,
-            [id]: updatedTask,
+            [taskId]: updatedTask,
           },
         }));
       } catch (error) {
