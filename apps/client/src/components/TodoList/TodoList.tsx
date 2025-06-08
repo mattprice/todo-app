@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
-import { useTaskStore } from "../../store";
+import { useTaskStore } from "../../stores/useTaskStore";
 import { Alert } from "../Alert/Alert";
 import { TodoItem } from "../TodoItem/TodoItem";
 import styles from "./TodoList.module.scss";
@@ -22,7 +22,13 @@ export function TodoList() {
   }
 
   return (
-    <section className={styles.todoList} role="list" aria-label="Task List">
+    <section
+      className={styles.todoList}
+      role="list"
+      aria-labelledby="list-name"
+    >
+      <h1 id="list-name">Task List</h1>
+
       {taskIds.map((id) => (
         <TodoItem key={id} id={id} />
       ))}

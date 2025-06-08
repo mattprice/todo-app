@@ -1,5 +1,5 @@
 import { type KeyboardEvent, useEffect, useState } from "react";
-import { useTaskStore } from "../../store";
+import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItem.module.scss";
 
 interface TodoItemProps {

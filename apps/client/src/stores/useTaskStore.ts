@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { Task } from "../../../shared/types";
-import { socket } from "./socket";
+import type { Task } from "../../../../shared/types";
+import { socket } from "../socket";
 
 interface StoreState {
   status: "loading" | "error" | "success";
@@ -99,7 +99,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
     get().fetchTasks();
   });
 
-  socket.on("taskUpdate", (data) => {
+  socket.on("updateTask", (data) => {
     set((state) => ({
       tasks: {
         ...state.tasks,
