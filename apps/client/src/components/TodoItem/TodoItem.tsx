@@ -55,7 +55,6 @@ export function TodoItem({ id = "" }: TodoItemProps) {
 
   useEffect(() => {
     // TODO: Don't highlight your own selections
-    // TODO: Send previews of text changes to other users
     const textNode = inputRef.current?.firstChild;
     if (!textNode || !textSelections || !CSS.highlights) {
       return;
@@ -88,6 +87,16 @@ export function TodoItem({ id = "" }: TodoItemProps) {
       CSS.highlights.clear();
     };
   }, [textSelections]);
+
+  const handleBlur = () => {
+    // Don't reset the text selection if the input field is still focused
+    // (This could happen if, e.g., the user clicks to another browser tab)
+    if (document.activeElement === inputRef.current) {
+      return;
+    }
+
+    useSessionStore.getState().sendTextSelection(id, null, null);
+  };
 
   // TODO: Clear text selection when the input is blurred
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -146,6 +155,7 @@ export function TodoItem({ id = "" }: TodoItemProps) {
         role="textbox"
         contentEditable
         className={styles.input}
+        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         data-placeholder={!task ? "Add a new task..." : ""}
         title="Edit task title"
