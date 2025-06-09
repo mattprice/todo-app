@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { useTaskStore } from "../../stores/useTaskStore";
 import { Alert } from "../Alert/Alert";
 import { TodoItem } from "../TodoItem/TodoItem";
+import { TodoItemDropTarget } from "../TodoItem/TodoItemDropTarget";
 import styles from "./TodoList.module.scss";
 
 export function TodoList() {
   const status = useTaskStore((s) => s.status);
-  const taskIds = useTaskStore(useShallow((s) => Object.keys(s.tasks)));
+  const tasks = useTaskStore(useShallow((s) => s.tasks));
+
+  const sortedTasks = Object.values(tasks).sort((a, b) => {
+    return a.priority - b.priority;
+  });
 
   useEffect(() => {
     useTaskStore.getState().fetchTasks();
@@ -21,6 +26,8 @@ export function TodoList() {
     return <div>Loading tasks...</div>;
   }
 
+  const lastPriority = sortedTasks[sortedTasks.length - 1]?.priority || 0;
+
   return (
     <section
       className={styles.todoList}
@@ -29,11 +36,26 @@ export function TodoList() {
     >
       <h1 id="list-name">Task List</h1>
 
-      {taskIds.map((id) => (
-        <TodoItem key={id} id={id} />
-      ))}
+      {sortedTasks.map((task, i, array) => {
+        const prevPriority = i === 0 ? 0 : array[i - 1].priority;
+        const nextPriority = task.priority;
 
-      <TodoItem />
+        return (
+          <Fragment key={task.id}>
+            <TodoItemDropTarget
+              prevPriority={prevPriority}
+              nextPriority={nextPriority}
+            />
+            <TodoItem id={task.id} />
+          </Fragment>
+        );
+      })}
+
+      <TodoItemDropTarget
+        prevPriority={lastPriority}
+        nextPriority={lastPriority + 1}
+      />
+      <TodoItem nextPriority={lastPriority + 1} />
     </section>
   );
 }

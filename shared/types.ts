@@ -2,6 +2,7 @@ export interface Task {
   id: string;
   title: string;
   completed: boolean;
+  priority: number;
 }
 
 export interface TextSelection {

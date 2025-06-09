@@ -46,7 +46,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ title: task.title }),
+          body: JSON.stringify(task),
         });
 
         if (!response.ok) {

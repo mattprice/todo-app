@@ -2,6 +2,16 @@
   display: flex;
   width: 100%;
   gap: 0.5rem;
+  transition: all 0.15s ease;
+
+  &[draggable="true"] {
+    cursor: grab;
+  }
+
+  &.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+  }
 }
 
 .input {

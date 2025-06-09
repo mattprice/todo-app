@@ -1,18 +1,21 @@
-import { type KeyboardEvent, useEffect, useRef } from "react";
+import clsx from "clsx";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItem.module.scss";
 
 interface TodoItemProps {
   id?: string;
+  nextPriority?: number;
 }
 
-export function TodoItem({ id = "" }: TodoItemProps) {
+export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
   const textSelections = useSessionStore((s) => s.textSelections[id]);
   const addTask = useTaskStore((s) => s.addTask);
   const editTask = useTaskStore((s) => s.editTask);
   const inputRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     // Don't update the input field if it's focused. (You run into a fun bug
@@ -114,25 +117,29 @@ export function TodoItem({ id = "" }: TodoItemProps) {
     if (event.key === "Escape") {
       event.preventDefault();
       event.currentTarget.blur();
-      inputRef.current.textContent = task.title;
+      inputRef.current.textContent = task.title || "";
     }
 
     // Create a new task on Enter, or blur the input for existing tasks
     if (event.key === "Enter") {
       event.preventDefault();
-      event.currentTarget.blur();
 
       // TODO: Display something if there is an error
       if (newTitle !== "" && !task) {
-        addTask({ title: newTitle, completed: false });
+        addTask({
+          title: newTitle,
+          completed: false,
+          priority: nextPriority || 0,
+        });
         inputRef.current.textContent = "";
       }
-    }
 
-    // For everything else, if the value has changed, update the task
-    // TODO: If the title is empty, ask if they want to delete the task
-    if (task && newTitle !== task.title) {
-      editTask(id, { title: newTitle });
+      // For everything else, if the value has changed, update the task
+      // TODO: If the title is empty, ask if they want to delete the task
+      if (task && newTitle !== task.title) {
+        editTask(id, { title: newTitle });
+        event.currentTarget.blur();
+      }
     }
   };
 
@@ -142,8 +149,24 @@ export function TodoItem({ id = "" }: TodoItemProps) {
     }
   };
 
+  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    event.dataTransfer.setData("text/plain", task.id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div role="listitem" className={styles.todoItem} aria-label="Task">
+    <div
+      role="listitem"
+      className={clsx(styles.todoItem, isDragging && styles.dragging)}
+      aria-label="Task"
+      draggable={!!task}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <input
         name="completed"
         type="checkbox"
