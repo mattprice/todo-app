@@ -48,12 +48,14 @@ export function TodoItemDropTarget({
 
   return (
     <div
-      className={clsx(styles.dropTarget, isDragOver && styles.dragOver)}
+      className={styles.dropTarget}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       aria-hidden="true"
       tabIndex={-1}
-    />
+    >
+      <div className={clsx(isDragOver && styles.dragOver)} />
+    </div>
   );
 }
