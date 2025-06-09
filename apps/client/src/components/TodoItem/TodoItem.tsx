@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItem.module.scss";
@@ -11,11 +11,12 @@ interface TodoItemProps {
 
 export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
+  const dragState = useTaskStore((s) => s.dragState);
   const textSelections = useSessionStore((s) => s.textSelections[id]);
   const addTask = useTaskStore((s) => s.addTask);
   const editTask = useTaskStore((s) => s.editTask);
+  const setDragState = useTaskStore((s) => s.setDragState);
   const inputRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     // Don't update the input field if it's focused. (You run into a fun bug
@@ -150,18 +151,30 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
   };
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    event.dataTransfer.setData("text/plain", task.id);
+    event.dataTransfer.effectAllowed = "move";
+
+    if (task) {
+      setDragState({
+        taskId: task.id,
+        taskPriority: task.priority,
+      });
+    }
   };
 
   const handleDragEnd = () => {
-    setIsDragging(false);
+    setDragState({
+      taskId: null,
+      taskPriority: null,
+    });
   };
+
+  const isDraggingThis = dragState.taskId === id;
+  const isDraggingSomething = !!dragState.taskId;
 
   return (
     <div
       role="listitem"
-      className={clsx(styles.todoItem, isDragging && styles.dragging)}
+      className={clsx(styles.todoItem, isDraggingThis && styles.dragging)}
       aria-label="Task"
       draggable={!!task}
       onDragStart={handleDragStart}
@@ -180,7 +193,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
       <div
         ref={inputRef}
         role="textbox"
-        contentEditable
+        contentEditable={!isDraggingSomething}
         className={styles.input}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}

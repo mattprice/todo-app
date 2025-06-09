@@ -12,15 +12,16 @@ export function TodoItemDropTarget({
   prevPriority,
   nextPriority,
 }: TodoItemDropTargetProps) {
+  const dragState = useTaskStore((s) => s.dragState);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    // TODO: This doesn't work since dataTransfer is empty
-    // TODO: Make it so TodoItems aren't editable while anything is being dragged
-    const taskId = event.dataTransfer.getData("text/plain");
-    const taskPriority = useTaskStore.getState().tasks[taskId]?.priority;
-
-    if (taskPriority == prevPriority || taskPriority == nextPriority) {
+    // Don't show the drop target if the task hasn't actually moved positions.
+    // event.dataTransfer isn't reachable here, so we have to use a global state.
+    if (
+      dragState?.taskPriority === prevPriority ||
+      dragState?.taskPriority === nextPriority
+    ) {
       return;
     }
 
@@ -36,12 +37,13 @@ export function TodoItemDropTarget({
     event.preventDefault();
     setIsDragOver(false);
 
-    const taskId = event.dataTransfer.getData("text/plain");
-    const priority = prevPriority + (nextPriority - prevPriority) / 2;
+    if (dragState.taskId) {
+      const priority = prevPriority + (nextPriority - prevPriority) / 2;
 
-    useTaskStore.getState().editTask(taskId, {
-      priority,
-    });
+      useTaskStore.getState().editTask(dragState.taskId, {
+        priority,
+      });
+    }
   };
 
   return (

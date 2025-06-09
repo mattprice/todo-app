@@ -2,21 +2,32 @@ import { create } from "zustand";
 import type { Task } from "../../../../shared/types";
 import { socket } from "../socket";
 
+interface DragState {
+  taskId: string | null;
+  taskPriority: number | null;
+}
+
 interface StoreState {
   status: "loading" | "error" | "success";
   tasks: Record<string, Task>;
+  dragState: DragState;
 }
 
 interface StoreActions {
   fetchTasks: () => Promise<void>;
   addTask: (task: Omit<Task, "id">) => void;
   editTask: (taskId: string, task: Partial<Task>) => void;
+  setDragState: (dragState: DragState) => void;
 }
 
 export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
   const store: StoreState & StoreActions = {
     status: "loading",
     tasks: {},
+    dragState: {
+      taskId: null,
+      taskPriority: null,
+    },
 
     fetchTasks: async () => {
       set({ status: "loading" });
@@ -92,6 +103,11 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
       } catch (error) {
         console.error("Error updating task:", error);
       }
+    },
+    setDragState: (dragState) => {
+      set({
+        dragState: dragState,
+      });
     },
   };
 
