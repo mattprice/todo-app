@@ -26,36 +26,23 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
     }
   }, [task?.title]);
 
-  useEffect(() => {
-    const inputField = inputRef.current;
-    if (!id || !inputField) {
+  const handleSelection = () => {
+    if (!id) {
       return;
     }
 
-    const handleSelection = () => {
-      const selection = window.getSelection();
+    // Ignore empty selections or selections with multiple ranges
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount !== 1) {
+      return;
+    }
 
-      // Ignore empty selections or selections with multiple ranges
-      if (!selection || selection.rangeCount !== 1) {
-        return;
-      }
+    const range = selection.getRangeAt(0);
+    const start = range.startOffset;
+    const end = range.endOffset;
 
-      // Ignore events for other TodoItems
-      if (!inputField.contains(selection.anchorNode as Node)) {
-        return;
-      }
-
-      const range = selection.getRangeAt(0);
-      const start = range.startOffset;
-      const end = range.endOffset;
-      useSessionStore.getState().sendTextSelection(id, start, end);
-    };
-
-    document.addEventListener("selectionchange", handleSelection);
-    return () => {
-      document.removeEventListener("selectionchange", handleSelection);
-    };
-  }, [id]);
+    useSessionStore.getState().sendTextSelection(id, start, end);
+  };
 
   useEffect(() => {
     const textNode = inputRef.current?.firstChild;
@@ -106,7 +93,6 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
     useSessionStore.getState().sendTextSelection(id, null, null);
   };
 
-  // TODO: Clear text selection when the input is blurred
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!inputRef.current) {
       return;
@@ -197,6 +183,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         className={styles.input}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
+        onSelect={handleSelection}
         data-placeholder={!task ? "Add a new task..." : ""}
         title="Edit task title"
       />
