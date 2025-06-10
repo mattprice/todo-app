@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type KeyboardEvent, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItem.module.scss";
@@ -83,56 +83,50 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
     };
   }, [textSelections]);
 
-  const handleBlur = () => {
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
     // Don't reset the text selection if the input field is still focused
     // (This could happen if, e.g., the user clicks to another browser tab)
-    if (document.activeElement === inputRef.current) {
+    if (document.activeElement === event.currentTarget) {
       return;
     }
 
     useSessionStore.getState().sendTextSelection(id, null, null);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (!inputRef.current) {
-      return;
-    }
-
-    const newTitle = inputRef.current.textContent || "";
-
-    // Reset the input field on Escape
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Escape") {
       event.preventDefault();
       event.currentTarget.blur();
-      inputRef.current.textContent = task.title || "";
     }
 
-    // Create a new task on Enter, or blur the input for existing tasks
     if (event.key === "Enter") {
       event.preventDefault();
 
-      // TODO: Display something if there is an error
-      if (newTitle !== "" && !task) {
+      const newTitle = event.currentTarget.textContent || "";
+      if (!task && newTitle !== "") {
+        // TODO: Display something if there is an error
         addTask({
           title: newTitle,
           completed: false,
           priority: nextPriority || 0,
         });
-        inputRef.current.textContent = "";
-      }
-
-      // For everything else, if the value has changed, update the task
-      // TODO: If the title is empty, ask if they want to delete the task
-      if (task && newTitle !== task.title) {
-        editTask(id, { title: newTitle });
+        event.currentTarget.textContent = "";
+      } else {
         event.currentTarget.blur();
       }
     }
   };
 
+  const handleTitleChange = (event: React.InputEvent<HTMLDivElement>) => {
+    const newTitle = event.currentTarget.textContent || "";
+    if (task && newTitle !== task.title) {
+      editTask(id, { title: newTitle });
+    }
+  };
+
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (task) {
-      editTask(id, { completed: event.target.checked });
+      editTask(id, { completed: event.currentTarget.checked });
     }
   };
 
@@ -182,6 +176,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         contentEditable={!isDraggingSomething}
         className={styles.input}
         onBlur={handleBlur}
+        onInput={handleTitleChange}
         onKeyDown={handleKeyDown}
         onSelect={handleSelection}
         data-placeholder={!task ? "Add a new task..." : ""}
