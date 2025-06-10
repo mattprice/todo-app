@@ -1,21 +1,31 @@
-import { randomUUID } from "crypto";
 import express from "express";
 import type { Task } from "../../../shared/types.ts";
+import { db } from "../db.ts";
 import { emitTaskUpdate } from "../socket.ts";
 
 const router = express.Router();
 
-let tasks: Record<string, Task> = {};
+router.get("/tasks", async (req, res) => {
+  try {
+    const tasks = await db("tasks").select("*");
 
-router.get("/tasks", (req, res) => {
-  res.json({
-    data: {
-      tasks,
-    },
-  });
+    const tasksObject: Record<string, Task> = {};
+    tasks.forEach((task) => {
+      tasksObject[task.id] = task;
+    });
+
+    res.json({
+      data: {
+        tasks: tasksObject,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ error: "Failed to fetch tasks" });
+  }
 });
 
-router.post("/tasks", (req, res) => {
+router.post("/tasks", async (req, res) => {
   const { title, priority } = req.body as Task;
 
   if (typeof title !== "string") {
@@ -28,24 +38,30 @@ router.post("/tasks", (req, res) => {
     return;
   }
 
-  const id = randomUUID();
-  tasks[id] = {
-    id,
-    title,
-    completed: false,
-    priority,
-  };
+  try {
+    const newTask: Task = {
+      id: crypto.randomUUID(),
+      title,
+      completed: false,
+      priority,
+    };
 
-  emitTaskUpdate(tasks[id]);
+    await db("tasks").insert(newTask);
 
-  res.status(201).json({
-    data: {
-      task: tasks[id],
-    },
-  });
+    emitTaskUpdate(newTask);
+
+    res.status(201).json({
+      data: {
+        task: newTask,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating task:", error);
+    res.status(500).json({ error: "Failed to create task" });
+  }
 });
 
-router.put("/tasks/:id", (req, res) => {
+router.put("/tasks/:id", async (req, res) => {
   const { id } = req.params;
   const { title, completed, priority } = req.body as Partial<Task>;
 
@@ -64,25 +80,30 @@ router.put("/tasks/:id", (req, res) => {
     return;
   }
 
-  if (!tasks[id]) {
-    res.status(404).json({ error: "Task not found" });
-    return;
+  try {
+    const existingTask = await db("tasks").where({ id }).first();
+    if (!existingTask) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
+    const query = await db("tasks")
+      .where({ id })
+      .update({ title, completed, priority })
+      .returning("*");
+    const updatedTask = query[0];
+
+    emitTaskUpdate(updatedTask);
+
+    res.json({
+      data: {
+        task: updatedTask,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ error: "Failed to update task" });
   }
-
-  tasks[id] = {
-    ...tasks[id],
-    title: title ?? tasks[id].title,
-    completed: completed ?? tasks[id].completed,
-    priority: priority ?? tasks[id].priority,
-  };
-
-  emitTaskUpdate(tasks[id]);
-
-  res.json({
-    data: {
-      task: tasks[id],
-    },
-  });
 });
 
 export const tasksRouter = router;
