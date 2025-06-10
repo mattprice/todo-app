@@ -56,11 +56,9 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         continue;
       }
 
-      // TODO: Finding a user this way isn't efficient for how often this runs
-      const user = useSessionStore
-        .getState()
-        .connectedUsers.find((u) => u.id === selection.userId);
-      if (!user) {
+      const userColors = useSessionStore.getState().userColors;
+      const color = userColors[selection.userId];
+      if (!color) {
         continue;
       }
 
@@ -71,7 +69,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         const highlight = new Highlight(range);
 
         // TODO: Handle users with the same color
-        CSS.highlights.set(user.color, highlight);
+        CSS.highlights.set(color, highlight);
       } catch (error) {
         console.error("Error creating highlight:", error);
       }

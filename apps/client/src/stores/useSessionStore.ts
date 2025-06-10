@@ -7,6 +7,7 @@ interface SessionState {
   currentUserId: string | null;
   currentUserColor: string | null;
   connectedUsers: User[];
+  userColors: Record<string, string>;
   textSelections: Record<string, TextSelection[]>;
 }
 
@@ -24,6 +25,7 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
     currentUserId: null,
     currentUserColor: null,
     connectedUsers: [],
+    userColors: {},
     textSelections: {},
 
     sendTextSelection: (taskId, start, end) => {
@@ -38,12 +40,18 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   socket.on("updateConnectedUsers", (data) => {
     const currentUser = data.users.find((user) => user.id === socket.id);
 
+    const userColors: Record<string, string> = {};
+    for (const user of data.users) {
+      userColors[user.id] = user.color;
+    }
+
     set((state) => ({
       ...state,
       status: "success",
       currentUserId: currentUser?.id || null,
       currentUserColor: currentUser?.color || null,
       connectedUsers: data.users,
+      userColors,
     }));
   });
 
@@ -55,7 +63,7 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   });
 
   socket.on("disconnect", () => {
-    set({ status: "error", connectedUsers: [] });
+    set({ status: "error", connectedUsers: [], userColors: {} });
   });
 
   return store;
