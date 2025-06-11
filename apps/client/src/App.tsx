@@ -33,7 +33,7 @@ function App() {
       } else {
         const styleSheet = document.styleSheets[0];
         styleSheet.insertRule(
-          `::highlight(${userId}) { background-color: ${highlightColor}; }`,
+          `::highlight(user-${userId}) { background-color: ${highlightColor}; }`,
           styleSheet.cssRules.length
         );
       }

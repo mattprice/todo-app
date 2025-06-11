@@ -62,7 +62,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         range.setEnd(textNode, selection.end || 0);
         const highlight = new Highlight(range);
 
-        CSS.highlights.set(selection.userId, highlight);
+        CSS.highlights.set(`user-${selection.userId}`, highlight);
       } catch (error) {
         console.error("Error creating highlight:", error);
       }
@@ -70,7 +70,7 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
 
     return () => {
       for (const selection of textSelections) {
-        CSS.highlights.delete(selection.userId);
+        CSS.highlights.delete(`user-${selection.userId}`);
       }
     };
   }, [textSelections]);
