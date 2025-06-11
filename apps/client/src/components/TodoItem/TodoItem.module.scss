@@ -27,8 +27,13 @@
   font: inherit;
   color: var(--color-text-1);
 
+  .completed & {
+    color: var(--color-text-3);
+  }
+
   &:hover {
-    background: var(--color-neutral-3);
+    background: var(--color-neutral-1);
+    border-color: var(--color-neutral-3);
   }
 
   &:focus,

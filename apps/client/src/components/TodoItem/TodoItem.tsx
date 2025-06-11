@@ -159,7 +159,11 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
   return (
     <div
       role="listitem"
-      className={clsx(styles.todoItem, isDraggingThis && styles.dragging)}
+      className={clsx(
+        styles.todoItem,
+        isDraggingThis && styles.dragging,
+        task?.completed && styles.completed
+      )}
       aria-label="Task"
     >
       <input

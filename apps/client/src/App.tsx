@@ -50,7 +50,10 @@ function App() {
               <div
                 className={`${styles.avatar} ${styles[connectedUser.color]}`}
               />
-              <div className={styles.username}>{connectedUser.displayName}</div>
+              <div className={styles.username}>
+                {connectedUser.displayName}
+                {connectedUser.id === currentUserId ? " (You)" : ""}
+              </div>
             </div>
           ))}
         </div>
