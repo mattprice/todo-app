@@ -50,16 +50,38 @@ export function initializeSocket(httpServer: HttpServer) {
         start: data.selection.start,
         end: data.selection.end,
       };
-
       const taskSelections = textSelections[data.taskId] || [];
-      const userSelection = taskSelections.find((s) => s.userId === socket.id);
-      if (userSelection) {
-        userSelection.start = selection.start;
-        userSelection.end = selection.end;
+
+      if (
+        selection.start === null ||
+        selection.end === null ||
+        selection.start === selection.end
+      ) {
+        // Remove the selection for this user, since they cleared it
+        const filteredSelections = taskSelections.filter(
+          (s) => s.userId !== socket.id
+        );
+
+        // If no more selections exist, remove the empty array
+        if (filteredSelections.length === 0) {
+          delete textSelections[data.taskId];
+        } else {
+          textSelections[data.taskId] = filteredSelections;
+        }
       } else {
-        taskSelections.push(selection);
+        const userSelection = taskSelections.find(
+          (s) => s.userId === socket.id
+        );
+
+        // Add a new selection for the user, or update an existing one
+        if (userSelection) {
+          userSelection.start = selection.start;
+          userSelection.end = selection.end;
+        } else {
+          taskSelections.push(selection);
+        }
+        textSelections[data.taskId] = taskSelections;
       }
-      textSelections[data.taskId] = taskSelections;
 
       socket.broadcast.emit("updateTextSelections", {
         selections: textSelections,
@@ -69,6 +91,13 @@ export function initializeSocket(httpServer: HttpServer) {
     socket.on("disconnect", () => {
       if (connectedUsers[socket.id]) {
         delete connectedUsers[socket.id];
+      }
+
+      // Clean up any text selections for the user
+      for (const taskId of Object.keys(textSelections)) {
+        textSelections[taskId] = textSelections[taskId].filter(
+          (selection) => selection.userId !== socket.id
+        );
       }
 
       io.emit("updateConnectedUsers", {
