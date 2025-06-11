@@ -56,28 +56,22 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         continue;
       }
 
-      const userColors = useSessionStore.getState().userColors;
-      const color = userColors[selection.userId];
-      if (!color) {
-        continue;
-      }
-
       try {
         const range = new Range();
         range.setStart(textNode, selection.start || 0);
         range.setEnd(textNode, selection.end || 0);
         const highlight = new Highlight(range);
 
-        // TODO: Handle users with the same color
-        CSS.highlights.set(color, highlight);
+        CSS.highlights.set(selection.userId, highlight);
       } catch (error) {
         console.error("Error creating highlight:", error);
       }
     }
 
-    // TODO: Handle highlights in multiple tasks
     return () => {
-      CSS.highlights.clear();
+      for (const selection of textSelections) {
+        CSS.highlights.delete(selection.userId);
+      }
     };
   }, [textSelections]);
 

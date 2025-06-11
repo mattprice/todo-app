@@ -6,7 +6,8 @@ import { useSessionStore } from "./stores/useSessionStore";
 
 function App() {
   const connectedUsers = useSessionStore((s) => s.connectedUsers);
-  const currentUserColor = useSessionStore((s) => s.currentUserColor);
+  const userColors = useSessionStore((s) => s.textSelectionColors);
+  const currentUserId = useSessionStore((s) => s.currentUserId);
 
   useEffect(() => {
     socket.connect();
@@ -17,17 +18,27 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (currentUserColor) {
-      const bodyStyles = window.getComputedStyle(document.body);
+    // Set up the ::selection and ::highlight colors for each user
+    const bodyStyles = window.getComputedStyle(document.body);
+    for (const [userId, color] of Object.entries(userColors)) {
       const highlightColor = bodyStyles.getPropertyValue(
-        `--color-user-${currentUserColor}-50`
+        `--color-user-${color}-50`
       );
-      document.documentElement.style.setProperty(
-        "--color-current-user",
-        highlightColor
-      );
+
+      if (userId === currentUserId) {
+        document.documentElement.style.setProperty(
+          "--color-current-user",
+          highlightColor
+        );
+      } else {
+        const styleSheet = document.styleSheets[0];
+        styleSheet.insertRule(
+          `::highlight(${userId}) { background-color: ${highlightColor}; }`,
+          styleSheet.cssRules.length
+        );
+      }
     }
-  }, [currentUserColor]);
+  }, [currentUserId, userColors]);
 
   return (
     <>

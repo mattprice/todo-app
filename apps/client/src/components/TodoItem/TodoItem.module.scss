@@ -40,20 +40,4 @@
     color: var(--color-text-3);
     pointer-events: none;
   }
-
-  &::highlight(blue) {
-    background-color: var(--color-user-blue-50);
-  }
-
-  &::highlight(green) {
-    background-color: var(--color-user-green-50);
-  }
-
-  &::highlight(yellow) {
-    background-color: var(--color-user-yellow-50);
-  }
-
-  &::highlight(pink) {
-    background-color: var(--color-user-pink-50);
-  }
 }

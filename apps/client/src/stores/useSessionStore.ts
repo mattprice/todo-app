@@ -5,10 +5,9 @@ import { socket } from "../socket";
 interface SessionState {
   status: "loading" | "error" | "success";
   currentUserId: string | null;
-  currentUserColor: string | null;
   connectedUsers: User[];
-  userColors: Record<string, string>;
   textSelections: Record<string, TextSelection[]>;
+  textSelectionColors: Record<string, string>;
 }
 
 interface SessionActions {
@@ -23,10 +22,9 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   const store: SessionState & SessionActions = {
     status: "loading",
     currentUserId: null,
-    currentUserColor: null,
     connectedUsers: [],
-    userColors: {},
     textSelections: {},
+    textSelectionColors: {},
 
     sendTextSelection: (taskId, start, end) => {
       // TODO: Debounce this action to avoid flooding the server with updates?
@@ -49,9 +47,8 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
       ...state,
       status: "success",
       currentUserId: currentUser?.id || null,
-      currentUserColor: currentUser?.color || null,
       connectedUsers: data.users,
-      userColors,
+      textSelectionColors: userColors,
     }));
   });
 
@@ -63,7 +60,12 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   });
 
   socket.on("disconnect", () => {
-    set({ status: "error", connectedUsers: [], userColors: {} });
+    set({
+      status: "error",
+      connectedUsers: [],
+      textSelections: {},
+      textSelectionColors: {},
+    });
   });
 
   return store;
