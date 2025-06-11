@@ -120,7 +120,7 @@ export function TaskItem({
 
   const handleTitleChange = (event: React.InputEvent<HTMLDivElement>) => {
     const newTitle = event.currentTarget.textContent || "";
-    if (!isNewTask && newTitle !== task.title) {
+    if (!isNewTask) {
       editTask(id, { title: newTitle });
     }
   };

@@ -77,32 +77,11 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
         console.error("Error creating task:", error);
       }
     },
-    editTask: async (taskId, task) => {
-      try {
-        const response = await fetch(`/api/tasks/${taskId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(task),
-        });
-
-        if (!response.ok) {
-          throw new Error("Unable to update task");
-        }
-
-        const data = await response.json();
-        const updatedTask = data.data.task;
-
-        set((state) => ({
-          tasks: {
-            ...state.tasks,
-            [taskId]: updatedTask,
-          },
-        }));
-      } catch (error) {
-        console.error("Error updating task:", error);
-      }
+    editTask: (taskId, task) => {
+      socket.emit("editTask", {
+        taskId,
+        task,
+      });
     },
     setDragState: (dragState) => {
       set({

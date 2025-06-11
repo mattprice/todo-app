@@ -61,49 +61,4 @@ router.post("/tasks", async (req, res) => {
   }
 });
 
-router.put("/tasks/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, completed, priority } = req.body as Partial<Task>;
-
-  if (title !== undefined && typeof title !== "string") {
-    res.status(400).json({ error: "Title must be a string" });
-    return;
-  }
-
-  if (completed !== undefined && typeof completed !== "boolean") {
-    res.status(400).json({ error: "Completed must be a boolean" });
-    return;
-  }
-
-  if (priority !== undefined && typeof priority !== "number") {
-    res.status(400).json({ error: "Priority must be a number" });
-    return;
-  }
-
-  try {
-    const existingTask = await db("tasks").where({ id }).first();
-    if (!existingTask) {
-      res.status(404).json({ error: "Task not found" });
-      return;
-    }
-
-    const query = await db("tasks")
-      .where({ id })
-      .update({ title, completed, priority })
-      .returning("*");
-    const updatedTask = query[0];
-
-    emitTaskUpdate(updatedTask);
-
-    res.json({
-      data: {
-        task: updatedTask,
-      },
-    });
-  } catch (error) {
-    console.error("Error updating task:", error);
-    res.status(500).json({ error: "Failed to update task" });
-  }
-});
-
 export const tasksRouter = router;

@@ -7,6 +7,7 @@ import type {
   TextSelection,
   User,
 } from "../../../shared/typeDefs.ts";
+import { db } from "./db.ts";
 
 // Users are assigned a unique combination of name and color on connection
 // NOTE: For best results, these arrays should be the same length
@@ -86,6 +87,40 @@ export function initializeSocket(httpServer: HttpServer) {
       socket.broadcast.emit("updateTextSelections", {
         selections: textSelections,
       });
+    });
+
+    socket.on("editTask", async (data) => {
+      const { taskId, task } = data;
+      const { title, completed, priority } = task;
+
+      if (
+        (title !== undefined && typeof title !== "string") ||
+        (completed !== undefined && typeof completed !== "boolean") ||
+        (priority !== undefined && typeof priority !== "number")
+      ) {
+        console.error("Invalid task data received from socket");
+        return;
+      }
+
+      try {
+        const existingTask = await db("tasks").where({ id: taskId }).first();
+        if (!existingTask) {
+          console.error("Task not found");
+          return;
+        }
+
+        const query = await db("tasks")
+          .where({ id: taskId })
+          .update({ title, completed, priority })
+          .returning("*");
+        const updatedTask = query[0];
+
+        socket.broadcast.emit("updateTask", {
+          task: updatedTask,
+        });
+      } catch (error) {
+        console.error("Error updating task via socket:", error);
+      }
     });
 
     socket.on("disconnect", () => {
