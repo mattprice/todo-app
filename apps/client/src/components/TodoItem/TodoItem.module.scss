@@ -48,8 +48,15 @@
 .dragHandle {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   cursor: grab;
+  width: 1rem;
+
+  &[draggable="false"] {
+    svg {
+      display: none;
+    }
+  }
 
   &:active {
     cursor: grabbing;

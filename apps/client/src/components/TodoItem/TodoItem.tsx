@@ -184,17 +184,15 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         data-placeholder={!task ? "Add a new task..." : ""}
         title="Edit task title"
       />
-      {task && (
-        <div
-          draggable
-          className={styles.dragHandle}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          title="Drag to reorder"
-        >
-          <ListIcon />
-        </div>
-      )}
+      <div
+        draggable={!!task}
+        className={styles.dragHandle}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        title="Drag to reorder"
+      >
+        <ListIcon />
+      </div>
     </div>
   );
 }
