@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r --parallel build",
     "migrate:latest": "pnpm -r migrate:latest",
     "migrate:rollback": "pnpm -r migrate:rollback",
     "migrate:make": "pnpm -r migrate:make"
