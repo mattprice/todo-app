@@ -14,7 +14,11 @@ export function TaskList() {
   }, []);
 
   if (status === "error") {
-    return <Alert message="Unable to fetch the task list. Please try again." />;
+    return (
+      <div className={styles.errorContainer}>
+        <Alert message="Unable to fetch the task list. Please try again." />
+      </div>
+    );
   }
 
   if (status === "loading") {

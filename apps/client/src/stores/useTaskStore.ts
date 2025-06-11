@@ -45,6 +45,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
         set({
           status: "success",
           tasks: data.data.tasks,
+          errorMessage: undefined,
         });
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -95,10 +96,6 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
 
   socket.on("connect", () => {
     get().fetchTasks();
-    set({
-      status: "success",
-      errorMessage: undefined,
-    });
   });
 
   socket.on("updateTask", (data) => {
