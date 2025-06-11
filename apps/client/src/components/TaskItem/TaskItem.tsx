@@ -3,20 +3,20 @@ import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useTaskStore } from "../../stores/useTaskStore";
-import styles from "./TodoItem.module.scss";
-import { TodoItemDropTarget } from "./TodoItemDropTarget";
+import { TaskDropTarget } from "./TaskDropTarget";
+import styles from "./TaskItem.module.scss";
 
-interface TodoItemProps {
+interface TaskItemProps {
   id?: string;
   prevPriority: number;
   nextPriority: number;
 }
 
-export function TodoItem({
+export function TaskItem({
   id = "",
   prevPriority,
   nextPriority,
-}: TodoItemProps) {
+}: TaskItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
   const dragState = useTaskStore((s) => s.dragState);
   const textSelections = useSessionStore((s) => s.textSelections[id]);
@@ -163,11 +163,11 @@ export function TodoItem({
   const isDraggingSomething = !!dragState.taskId;
 
   return (
-    <TodoItemDropTarget prevPriority={prevPriority} nextPriority={nextPriority}>
+    <TaskDropTarget prevPriority={prevPriority} nextPriority={nextPriority}>
       <div
         role="listitem"
         className={clsx(
-          styles.todoItem,
+          styles.taskItem,
           isDraggingThis && styles.dragging,
           task?.completed && styles.completed
         )}
@@ -205,6 +205,6 @@ export function TodoItem({
           <ListIcon />
         </div>
       </div>
-    </TodoItemDropTarget>
+    </TaskDropTarget>
   );
 }

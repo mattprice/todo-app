@@ -1,7 +1,7 @@
 import express from "express";
-import type { Task } from "../../../shared/types.ts";
-import { db } from "../db.ts";
-import { emitTaskUpdate } from "../socket.ts";
+import type { Task } from "../../../shared/typeDefs.ts";
+import { db } from "./db.ts";
+import { emitTaskUpdate } from "./socketHandler.ts";
 
 const router = express.Router();
 

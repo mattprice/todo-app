@@ -1,8 +1,8 @@
 import express from "express";
 import fs from "fs";
 import http from "http";
-import { tasksRouter } from "./routes/tasks.ts";
-import { initializeSocket } from "./socket.ts";
+import { initializeSocket } from "./src/socketHandler.ts";
+import { tasksRouter } from "./src/tasksRouter.ts";
 
 if (fs.existsSync("../../.env")) {
   process.loadEnvFile("../../.env");

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Task } from "../../../../shared/types";
+import type { Task } from "../../../../shared/typeDefs";
 import { socket } from "../socket";
 
 interface DragState {

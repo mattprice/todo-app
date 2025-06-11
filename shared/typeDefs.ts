@@ -35,12 +35,12 @@ export interface ClientTextSelectionEvent {
   selection: Omit<TextSelection, "userId"> | null;
 }
 
-export interface ServerEvents {
+export interface ServerToClientEvents {
   updateTask: (data: UpdateTaskEvent) => void;
   updateConnectedUsers: (data: UpdateConnectedUsersEvent) => void;
   updateTextSelections: (data: UpdateTextSelectionsEvent) => void;
 }
 
-export interface ClientEvents {
+export interface ClientToServerEvents {
   textSelection: (data: ClientTextSelectionEvent) => void;
 }

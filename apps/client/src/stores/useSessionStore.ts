@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { TextSelection, User } from "../../../../shared/types";
+import type { TextSelection, User } from "../../../../shared/typeDefs";
 import { socket } from "../socket";
 
 interface SessionState {

@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { useEffect } from "react";
+import { socket } from "../../socket";
+import { useSessionStore } from "../../stores/useSessionStore";
+import { TaskList } from "../TaskList/TaskList";
 import styles from "./App.module.scss";
-import { TodoList } from "./components/TodoList/TodoList";
-import { socket } from "./socket";
-import { useSessionStore } from "./stores/useSessionStore";
 
 function App() {
   const connectedUsers = useSessionStore((s) => s.connectedUsers);
@@ -61,7 +61,7 @@ function App() {
       </header>
 
       <div className={styles.container}>
-        <TodoList />
+        <TaskList />
       </div>
     </>
   );

@@ -1,19 +1,19 @@
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { useTaskStore } from "../../stores/useTaskStore";
-import styles from "./TodoItemDropTarget.module.scss";
+import styles from "./TaskDropTarget.module.scss";
 
-interface TodoItemDropTargetProps {
+interface TaskDropTargetProps {
   prevPriority: number;
   nextPriority: number;
   children: React.ReactNode;
 }
 
-export function TodoItemDropTarget({
+export function TaskDropTarget({
   prevPriority,
   nextPriority,
   children,
-}: TodoItemDropTargetProps) {
+}: TaskDropTargetProps) {
   const dragState = useTaskStore((s) => s.dragState);
   const [isDragOver, setIsDragOver] = useState(false);
   const dropTarget = useRef<HTMLDivElement>(null);

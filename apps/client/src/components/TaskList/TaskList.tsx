@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { useTaskStore } from "../../stores/useTaskStore";
 import { Alert } from "../Alert/Alert";
-import { TodoItem } from "../TodoItem/TodoItem";
-import styles from "./TodoList.module.scss";
+import { TaskItem } from "../TaskItem/TaskItem";
+import styles from "./TaskList.module.scss";
 
-export function TodoList() {
+export function TaskList() {
   const status = useTaskStore((s) => s.status);
   const tasks = useTaskStore(useShallow((s) => s.tasks));
 
@@ -29,7 +29,7 @@ export function TodoList() {
 
   return (
     <section
-      className={styles.todoList}
+      className={styles.taskList}
       role="list"
       aria-labelledby="list-name"
     >
@@ -39,7 +39,7 @@ export function TodoList() {
         const nextPriority = task.priority;
 
         return (
-          <TodoItem
+          <TaskItem
             id={task.id}
             prevPriority={prevPriority}
             nextPriority={nextPriority}
@@ -47,7 +47,7 @@ export function TodoList() {
         );
       })}
 
-      <TodoItem prevPriority={lastPriority} nextPriority={lastPriority + 1} />
+      <TaskItem prevPriority={lastPriority} nextPriority={lastPriority + 1} />
     </section>
   );
 }
