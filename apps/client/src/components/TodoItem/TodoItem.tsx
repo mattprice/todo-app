@@ -1,3 +1,4 @@
+import { ListIcon } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
@@ -126,6 +127,18 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
     event.dataTransfer.effectAllowed = "move";
 
     if (task) {
+      // Set a custom drag image so it looks like you're dragging the whole row
+      const todoItem = event.currentTarget.closest('[role="listitem"]');
+      if (todoItem) {
+        const parentRect = todoItem.getBoundingClientRect();
+        const handleRect = event.currentTarget.getBoundingClientRect();
+        event.dataTransfer.setDragImage(
+          todoItem,
+          parentRect.width - handleRect.width,
+          parentRect.height / 2
+        );
+      }
+
       setDragState({
         taskId: task.id,
         taskPriority: task.priority,
@@ -148,9 +161,6 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
       role="listitem"
       className={clsx(styles.todoItem, isDraggingThis && styles.dragging)}
       aria-label="Task"
-      draggable={!!task}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
     >
       <input
         name="completed"
@@ -174,6 +184,17 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
         data-placeholder={!task ? "Add a new task..." : ""}
         title="Edit task title"
       />
+      {task && (
+        <div
+          draggable
+          className={styles.dragHandle}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          title="Drag to reorder"
+        >
+          <ListIcon />
+        </div>
+      )}
     </div>
   );
 }
