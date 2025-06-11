@@ -27,7 +27,6 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
     textSelectionColors: {},
 
     sendTextSelection: (taskId, start, end) => {
-      // TODO: Debounce this action to avoid flooding the server with updates?
       socket.volatile.emit("textSelection", {
         taskId,
         selection: { start, end },

@@ -9,10 +9,6 @@ export function TaskList() {
   const status = useTaskStore((s) => s.status);
   const tasks = useTaskStore(useShallow((s) => s.tasks));
 
-  const sortedTasks = Object.values(tasks).sort((a, b) => {
-    return a.priority - b.priority;
-  });
-
   useEffect(() => {
     useTaskStore.getState().fetchTasks();
   }, []);
@@ -25,6 +21,9 @@ export function TaskList() {
     return <div>Loading tasks...</div>;
   }
 
+  const sortedTasks = Object.values(tasks).sort((a, b) => {
+    return a.priority - b.priority;
+  });
   const lastPriority = sortedTasks[sortedTasks.length - 1]?.priority || 0;
 
   return (
@@ -34,12 +33,14 @@ export function TaskList() {
       aria-labelledby="list-name"
     >
       <h1 id="list-name">Task List</h1>
+
       {sortedTasks.map((task, i, array) => {
         const prevPriority = i === 0 ? 0 : array[i - 1].priority;
         const nextPriority = task.priority;
 
         return (
           <TaskItem
+            key={task.id}
             id={task.id}
             prevPriority={prevPriority}
             nextPriority={nextPriority}

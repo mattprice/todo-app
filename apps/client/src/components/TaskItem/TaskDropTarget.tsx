@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TaskDropTarget.module.scss";
 
@@ -14,17 +14,13 @@ export function TaskDropTarget({
   nextPriority,
   children,
 }: TaskDropTargetProps) {
-  const dragState = useTaskStore((s) => s.dragState);
   const [isDragOver, setIsDragOver] = useState(false);
-  const dropTarget = useRef<HTMLDivElement>(null);
 
   const handleDragEnter = () => {
     // Don't show the drop target if the task hasn't actually moved positions.
     // event.dataTransfer isn't reachable here, so we have to use a global state.
-    if (
-      dragState?.taskPriority === prevPriority ||
-      dragState?.taskPriority === nextPriority
-    ) {
+    const { taskPriority } = useTaskStore.getState().dragState;
+    if (taskPriority === prevPriority || taskPriority === nextPriority) {
       return;
     }
 
@@ -36,6 +32,7 @@ export function TaskDropTarget({
     if (event.currentTarget.contains(event.relatedTarget as Node)) {
       return;
     }
+
     setIsDragOver(false);
   };
 
@@ -47,10 +44,11 @@ export function TaskDropTarget({
     event.preventDefault();
     setIsDragOver(false);
 
-    if (dragState.taskId) {
+    const { taskId } = useTaskStore.getState().dragState;
+    if (taskId) {
       const priority = prevPriority + (nextPriority - prevPriority) / 2;
 
-      useTaskStore.getState().editTask(dragState.taskId, {
+      useTaskStore.getState().editTask(taskId, {
         priority,
       });
     }
@@ -58,13 +56,11 @@ export function TaskDropTarget({
 
   return (
     <div
-      ref={dropTarget}
       className={styles.dropTarget}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      aria-hidden="true"
       tabIndex={-1}
     >
       <div className={clsx(isDragOver && styles.dragOver)} />

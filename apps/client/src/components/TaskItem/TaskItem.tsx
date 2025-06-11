@@ -25,6 +25,8 @@ export function TaskItem({
   const setDragState = useTaskStore((s) => s.setDragState);
   const inputRef = useRef<HTMLDivElement>(null);
 
+  const isNewTask = !task;
+
   useEffect(() => {
     // Don't update the input field if it's focused. (You run into a fun bug
     // where you end up typing at the beginning of the field.)
@@ -34,7 +36,7 @@ export function TaskItem({
   }, [task?.title]);
 
   const handleSelection = () => {
-    if (!id) {
+    if (isNewTask) {
       return;
     }
 
@@ -102,7 +104,7 @@ export function TaskItem({
       event.preventDefault();
 
       const newTitle = event.currentTarget.textContent || "";
-      if (!task && newTitle !== "") {
+      if (isNewTask && newTitle !== "") {
         // TODO: Display something if there is an error
         addTask({
           title: newTitle,
@@ -118,13 +120,13 @@ export function TaskItem({
 
   const handleTitleChange = (event: React.InputEvent<HTMLDivElement>) => {
     const newTitle = event.currentTarget.textContent || "";
-    if (task && newTitle !== task.title) {
+    if (!isNewTask && newTitle !== task.title) {
       editTask(id, { title: newTitle });
     }
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (task) {
+    if (!isNewTask) {
       editTask(id, { completed: event.currentTarget.checked });
     }
   };
@@ -132,7 +134,7 @@ export function TaskItem({
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     event.dataTransfer.effectAllowed = "move";
 
-    if (task) {
+    if (!isNewTask) {
       // Set a custom drag image so it looks like you're dragging the whole row
       const todoItem = event.currentTarget.closest('[role="listitem"]');
       if (todoItem) {
@@ -179,9 +181,9 @@ export function TaskItem({
           className={styles.checkbox}
           checked={task?.completed || false}
           onChange={handleCheckboxChange}
-          disabled={!task}
+          disabled={isNewTask}
           title="Mark task as complete"
-          aria-hidden={!task}
+          aria-hidden={isNewTask}
         />
         <div
           ref={inputRef}
@@ -192,11 +194,11 @@ export function TaskItem({
           onInput={handleTitleChange}
           onKeyDown={handleKeyDown}
           onSelect={handleSelection}
-          data-placeholder={!task ? "Add a new task..." : ""}
+          data-placeholder={isNewTask ? "Add a new task..." : ""}
           title="Edit task title"
         />
         <div
-          draggable={!!task}
+          draggable={!isNewTask}
           className={styles.dragHandle}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
