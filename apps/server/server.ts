@@ -1,5 +1,6 @@
 import express from "express";
 import fs from "fs";
+import helmet from "helmet";
 import http from "http";
 import { initializeSocket } from "./src/socketHandler.ts";
 import { tasksRouter } from "./src/tasksRouter.ts";
@@ -14,6 +15,7 @@ const server = http.createServer(app);
 
 initializeSocket(server);
 
+app.use(helmet());
 app.use(express.static("public"));
 app.use(express.json());
 
