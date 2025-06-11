@@ -34,7 +34,7 @@ function App() {
           "--color-current-user",
           highlightColor
         );
-      } else {
+      } else if (CSS.highlights) {
         const styleSheet = document.styleSheets[0];
         styleSheet.insertRule(
           `::highlight(user-${userId}) { background-color: ${highlightColor}; }`,
