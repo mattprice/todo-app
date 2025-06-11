@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useEffect } from "react";
 import styles from "./App.module.scss";
 import { TodoList } from "./components/TodoList/TodoList";
@@ -48,7 +49,7 @@ function App() {
           {connectedUsers.map((connectedUser) => (
             <div className={styles.user} key={connectedUser.id}>
               <div
-                className={`${styles.avatar} ${styles[connectedUser.color]}`}
+                className={clsx(styles.avatar, styles[connectedUser.color])}
               />
               <div className={styles.username}>
                 {connectedUser.displayName}

@@ -36,7 +36,13 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
   };
 
   socket.on("updateConnectedUsers", (data) => {
-    const currentUser = data.users.find((user) => user.id === socket.id);
+    // Sort the connected users so that the current user is always last
+    const sortedUsers = data.users.sort((a) => {
+      if (a.id === socket.id) {
+        return 1;
+      }
+      return 0;
+    });
 
     const userColors: Record<string, string> = {};
     for (const user of data.users) {
@@ -46,8 +52,8 @@ export const useSessionStore = create<SessionState & SessionActions>((set) => {
     set((state) => ({
       ...state,
       status: "success",
-      currentUserId: currentUser?.id || null,
-      connectedUsers: data.users,
+      currentUserId: socket.id || null,
+      connectedUsers: sortedUsers,
       textSelectionColors: userColors,
     }));
   });
