@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "pnpm -r --parallel dev"
+    "dev": "pnpm -r --parallel dev",
+    "migrate:latest": "pnpm -r migrate:latest",
+    "migrate:rollback": "pnpm -r migrate:rollback",
+    "migrate:make": "pnpm -r migrate:make"
   }
 }

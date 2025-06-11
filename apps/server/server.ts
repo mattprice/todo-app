@@ -1,10 +1,12 @@
+process.loadEnvFile("../../.env");
+
 import express from "express";
 import http from "http";
 import { tasksRouter } from "./routes/tasks.ts";
 import { initializeSocket } from "./socket.ts";
 
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.SERVER_PORT || "3000");
 const server = http.createServer(app);
 
 initializeSocket(server);
