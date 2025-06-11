@@ -1,21 +1,24 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItemDropTarget.module.scss";
 
 interface TodoItemDropTargetProps {
   prevPriority: number;
   nextPriority: number;
+  children: React.ReactNode;
 }
 
 export function TodoItemDropTarget({
   prevPriority,
   nextPriority,
+  children,
 }: TodoItemDropTargetProps) {
   const dragState = useTaskStore((s) => s.dragState);
   const [isDragOver, setIsDragOver] = useState(false);
+  const dropTarget = useRef<HTMLDivElement>(null);
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnter = () => {
     // Don't show the drop target if the task hasn't actually moved positions.
     // event.dataTransfer isn't reachable here, so we have to use a global state.
     if (
@@ -25,12 +28,19 @@ export function TodoItemDropTarget({
       return;
     }
 
-    event.preventDefault();
     setIsDragOver(true);
   };
 
-  const handleDragLeave = () => {
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    // If the drag leave event is caused by entering a child element, ignore it
+    if (event.currentTarget.contains(event.relatedTarget as Node)) {
+      return;
+    }
     setIsDragOver(false);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -48,14 +58,17 @@ export function TodoItemDropTarget({
 
   return (
     <div
+      ref={dropTarget}
       className={styles.dropTarget}
       onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       aria-hidden="true"
       tabIndex={-1}
     >
       <div className={clsx(isDragOver && styles.dragOver)} />
+      {children}
     </div>
   );
 }

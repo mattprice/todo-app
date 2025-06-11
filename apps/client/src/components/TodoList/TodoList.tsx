@@ -1,9 +1,8 @@
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { useTaskStore } from "../../stores/useTaskStore";
 import { Alert } from "../Alert/Alert";
 import { TodoItem } from "../TodoItem/TodoItem";
-import { TodoItemDropTarget } from "../TodoItem/TodoItemDropTarget";
 import styles from "./TodoList.module.scss";
 
 export function TodoList() {
@@ -35,27 +34,20 @@ export function TodoList() {
       aria-labelledby="list-name"
     >
       <h1 id="list-name">Task List</h1>
-
       {sortedTasks.map((task, i, array) => {
         const prevPriority = i === 0 ? 0 : array[i - 1].priority;
         const nextPriority = task.priority;
 
         return (
-          <Fragment key={task.id}>
-            <TodoItemDropTarget
-              prevPriority={prevPriority}
-              nextPriority={nextPriority}
-            />
-            <TodoItem id={task.id} />
-          </Fragment>
+          <TodoItem
+            id={task.id}
+            prevPriority={prevPriority}
+            nextPriority={nextPriority}
+          />
         );
       })}
 
-      <TodoItemDropTarget
-        prevPriority={lastPriority}
-        nextPriority={lastPriority + 1}
-      />
-      <TodoItem nextPriority={lastPriority + 1} />
+      <TodoItem prevPriority={lastPriority} nextPriority={lastPriority + 1} />
     </section>
   );
 }

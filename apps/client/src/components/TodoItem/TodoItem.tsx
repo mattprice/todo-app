@@ -4,13 +4,19 @@ import { useEffect, useRef } from "react";
 import { useSessionStore } from "../../stores/useSessionStore";
 import { useTaskStore } from "../../stores/useTaskStore";
 import styles from "./TodoItem.module.scss";
+import { TodoItemDropTarget } from "./TodoItemDropTarget";
 
 interface TodoItemProps {
   id?: string;
-  nextPriority?: number;
+  prevPriority: number;
+  nextPriority: number;
 }
 
-export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
+export function TodoItem({
+  id = "",
+  prevPriority,
+  nextPriority,
+}: TodoItemProps) {
   const task = useTaskStore((s) => s.tasks[id]);
   const dragState = useTaskStore((s) => s.dragState);
   const textSelections = useSessionStore((s) => s.textSelections[id]);
@@ -157,46 +163,48 @@ export function TodoItem({ id = "", nextPriority }: TodoItemProps) {
   const isDraggingSomething = !!dragState.taskId;
 
   return (
-    <div
-      role="listitem"
-      className={clsx(
-        styles.todoItem,
-        isDraggingThis && styles.dragging,
-        task?.completed && styles.completed
-      )}
-      aria-label="Task"
-    >
-      <input
-        name="completed"
-        type="checkbox"
-        className={styles.checkbox}
-        checked={task?.completed || false}
-        onChange={handleCheckboxChange}
-        disabled={!task}
-        title="Mark task as complete"
-        aria-hidden={!task}
-      />
+    <TodoItemDropTarget prevPriority={prevPriority} nextPriority={nextPriority}>
       <div
-        ref={inputRef}
-        role="textbox"
-        contentEditable={!isDraggingSomething}
-        className={styles.input}
-        onBlur={handleBlur}
-        onInput={handleTitleChange}
-        onKeyDown={handleKeyDown}
-        onSelect={handleSelection}
-        data-placeholder={!task ? "Add a new task..." : ""}
-        title="Edit task title"
-      />
-      <div
-        draggable={!!task}
-        className={styles.dragHandle}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        title="Drag to reorder"
+        role="listitem"
+        className={clsx(
+          styles.todoItem,
+          isDraggingThis && styles.dragging,
+          task?.completed && styles.completed
+        )}
+        aria-label="Task"
       >
-        <ListIcon />
+        <input
+          name="completed"
+          type="checkbox"
+          className={styles.checkbox}
+          checked={task?.completed || false}
+          onChange={handleCheckboxChange}
+          disabled={!task}
+          title="Mark task as complete"
+          aria-hidden={!task}
+        />
+        <div
+          ref={inputRef}
+          role="textbox"
+          contentEditable={!isDraggingSomething}
+          className={styles.input}
+          onBlur={handleBlur}
+          onInput={handleTitleChange}
+          onKeyDown={handleKeyDown}
+          onSelect={handleSelection}
+          data-placeholder={!task ? "Add a new task..." : ""}
+          title="Edit task title"
+        />
+        <div
+          draggable={!!task}
+          className={styles.dragHandle}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          title="Drag to reorder"
+        >
+          <ListIcon />
+        </div>
       </div>
-    </div>
+    </TodoItemDropTarget>
   );
 }
