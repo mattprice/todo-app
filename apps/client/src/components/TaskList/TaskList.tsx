@@ -14,7 +14,7 @@ export function TaskList() {
   }, []);
 
   if (status === "error") {
-    return <Alert message="Unable to fetch tasks" />;
+    return <Alert message="Unable to fetch the task list. Please try again." />;
   }
 
   if (status === "loading") {

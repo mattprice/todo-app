@@ -2,6 +2,8 @@ import clsx from "clsx";
 import { useEffect } from "react";
 import { socket } from "../../socket";
 import { useSessionStore } from "../../stores/useSessionStore";
+import { useTaskStore } from "../../stores/useTaskStore";
+import { Alert } from "../Alert/Alert";
 import { TaskList } from "../TaskList/TaskList";
 import styles from "./App.module.scss";
 
@@ -9,6 +11,7 @@ function App() {
   const connectedUsers = useSessionStore((s) => s.connectedUsers);
   const userColors = useSessionStore((s) => s.textSelectionColors);
   const currentUserId = useSessionStore((s) => s.currentUserId);
+  const errorMessage = useTaskStore((s) => s.errorMessage);
 
   useEffect(() => {
     socket.connect();
@@ -61,6 +64,12 @@ function App() {
       </header>
 
       <div className={styles.container}>
+        {errorMessage && (
+          <div className={styles.errorContainer}>
+            <Alert message={errorMessage} />
+          </div>
+        )}
+
         <TaskList />
       </div>
     </>

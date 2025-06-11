@@ -40,6 +40,10 @@ export interface ClientEditTaskEvent {
   task: Partial<Task>;
 }
 
+export interface EditTaskResponse {
+  error?: string;
+}
+
 export interface ServerToClientEvents {
   updateTask: (data: UpdateTaskEvent) => void;
   updateConnectedUsers: (data: UpdateConnectedUsersEvent) => void;
@@ -48,5 +52,8 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   textSelection: (data: ClientTextSelectionEvent) => void;
-  editTask: (data: ClientEditTaskEvent) => void;
+  editTask: (
+    data: ClientEditTaskEvent,
+    callback: (response: EditTaskResponse) => void
+  ) => void;
 }

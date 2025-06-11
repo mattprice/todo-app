@@ -11,6 +11,7 @@ interface StoreState {
   status: "loading" | "error" | "success";
   tasks: Record<string, Task>;
   dragState: DragState;
+  errorMessage?: string;
 }
 
 interface StoreActions {
@@ -75,12 +76,14 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
         }));
       } catch (error) {
         console.error("Error creating task:", error);
+        set({ errorMessage: "An error occurred while creating your task." });
       }
     },
     editTask: (taskId, task) => {
-      socket.emit("editTask", {
-        taskId,
-        task,
+      socket.emit("editTask", { taskId, task }, (response) => {
+        if (response.error) {
+          set({ errorMessage: `Your edits were not saved: ${response.error}` });
+        }
       });
     },
     setDragState: (dragState) => {
@@ -92,6 +95,10 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
 
   socket.on("connect", () => {
     get().fetchTasks();
+    set({
+      status: "success",
+      errorMessage: undefined,
+    });
   });
 
   socket.on("updateTask", (data) => {
@@ -104,7 +111,7 @@ export const useTaskStore = create<StoreState & StoreActions>((set, get) => {
   });
 
   socket.on("disconnect", () => {
-    set({ status: "error" });
+    set({ status: "error", errorMessage: "Disconnected from server" });
   });
 
   return store;

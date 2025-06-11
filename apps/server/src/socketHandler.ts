@@ -89,7 +89,7 @@ export function initializeSocket(httpServer: HttpServer) {
       });
     });
 
-    socket.on("editTask", async (data) => {
+    socket.on("editTask", async (data, callback) => {
       const { taskId, task } = data;
       const { title, completed, priority } = task;
 
@@ -98,14 +98,14 @@ export function initializeSocket(httpServer: HttpServer) {
         (completed !== undefined && typeof completed !== "boolean") ||
         (priority !== undefined && typeof priority !== "number")
       ) {
-        console.error("Invalid task data received from socket");
+        callback({ error: "Invalid task data" });
         return;
       }
 
       try {
         const existingTask = await db("tasks").where({ id: taskId }).first();
         if (!existingTask) {
-          console.error("Task not found");
+          callback({ error: "Task not found" });
           return;
         }
 
@@ -115,11 +115,12 @@ export function initializeSocket(httpServer: HttpServer) {
           .returning("*");
         const updatedTask = query[0];
 
-        socket.broadcast.emit("updateTask", {
+        io.emit("updateTask", {
           task: updatedTask,
         });
       } catch (error) {
         console.error("Error updating task via socket:", error);
+        callback({ error: "Unexpected error" });
       }
     });
 

@@ -105,7 +105,6 @@ export function TaskItem({
 
       const newTitle = event.currentTarget.textContent || "";
       if (isNewTask && newTitle !== "") {
-        // TODO: Display something if there is an error
         addTask({
           title: newTitle,
           completed: false,
